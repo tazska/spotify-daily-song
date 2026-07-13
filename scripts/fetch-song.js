@@ -4,7 +4,7 @@ const path = require('path');
 
 const HISTORY_PATH = path.join(__dirname, '..', 'data', 'history.json');
 const TODAY_PATH = path.join(__dirname, '..', 'data', 'today.json');
-const PLAYLIST_ID = process.env.SPOTIFY_PLAYLIST_ID || '37i9dQZEVXbMDoHDwVN2tF';
+const SEARCH_QUERY = process.env.SPOTIFY_SEARCH_QUERY || 'year:2026';
 
 function getDayOfYear() {
   const now = new Date();
@@ -60,30 +60,37 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-async function fetchPlaylistTracks(token) {
-  const res = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?limit=50`, {
+async function searchTracks(token) {
+  const year = new Date().getFullYear();
+  const query = SEARCH_QUERY.replace('2026', String(year));
+
+  const params = new URLSearchParams({
+    q: query,
+    type: 'track',
+    market: 'US',
+    limit: '50',
+  });
+
+  const res = await fetch(`https://api.spotify.com/v1/search?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` },
   });
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`Spotify playlist request failed (${res.status}): ${body}`);
+    throw new Error(`Spotify search request failed (${res.status}): ${body}`);
   }
 
   const data = await res.json();
 
-  return data.items.map((item) => {
-    const track = item.track;
-    return {
-      id: track.id,
-      name: track.name,
-      artists: track.artists.map((a) => a.name).join(', '),
-      album: track.album.name,
-      image: track.album.images[0]?.url || '',
-      url: track.external_urls.spotify,
-      preview_url: track.preview_url,
-    };
-  });
+  return data.tracks.items.map((track) => ({
+    id: track.id,
+    name: track.name,
+    artists: track.artists.map((a) => a.name).join(', '),
+    album: track.album.name,
+    image: track.album.images[0]?.url || '',
+    url: track.external_urls.spotify,
+    preview_url: track.preview_url,
+  }));
 }
 
 function pickSong(tracks, history) {
@@ -104,8 +111,8 @@ async function main() {
   console.log('Fetching access token...');
   const token = await getAccessToken();
 
-  console.log('Fetching playlist tracks...');
-  const tracks = await fetchPlaylistTracks(token);
+  console.log('Searching for tracks...');
+  const tracks = await searchTracks(token);
   console.log(`Got ${tracks.length} tracks.`);
 
   const history = loadHistory();

@@ -1,6 +1,6 @@
 # Spotify Daily Song
 
-A small web app that shows a different song each day, pulled from Spotify's **Top 50 - Global** playlist. A GitHub Action runs daily at 13:00 UTC (8:00 AM Colombia time), picks the song, and commits the result to the repo. The repo is connected to Render with auto-deploy, so every commit redeploys the site automatically.
+A small web app that shows a different song each day, pulled from Spotify's catalog. A GitHub Action runs daily at 13:00 UTC (8:00 AM Colombia time), picks the song, and commits the result to the repo. The repo is connected to Render with auto-deploy, so every commit redeploys the site automatically.
 
 ## Setup
 
@@ -39,7 +39,7 @@ A small web app that shows a different song each day, pulled from Spotify's **To
 
 ## How It Works
 
-- The GitHub Action fetches the Top 50 - Global playlist tracks from Spotify
+- The GitHub Action searches Spotify for current popular tracks (configurable via `SPOTIFY_SEARCH_QUERY` env var)
 - It deterministically picks a song based on the day of the year
 - Previously used songs are tracked in `data/history.json` to avoid repeats
 - Once all 50 songs have been shown, history resets and the cycle starts over
