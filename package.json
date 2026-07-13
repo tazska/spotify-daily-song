@@ -1,0 +1,14 @@
+{
+  "name": "spotify-daily-song",
+  "version": "1.0.0",
+  "description": "A small web app that shows a different song each day from Spotify's Top 50 - Global playlist",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "fetch-song": "node scripts/fetch-song.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Daily Song</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #121212;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+      color: #1DB954;
+    }
+
+    .subtitle {
+      color: #b3b3b3;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    .album-art {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      object-fit: cover;
+      background: #282828;
+    }
+
+    .song-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .artists {
+      color: #b3b3b3;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .listen-btn {
+      display: inline-block;
+      background: #1DB954;
+      color: #000000;
+      text-decoration: none;
+      padding: 0.85rem 2.5rem;
+      border-radius: 500px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .listen-btn:hover {
+      background: #1ed760;
+      transform: scale(1.04);
+    }
+
+    .loading {
+      color: #b3b3b3;
+      font-size: 1.1rem;
+    }
+
+    .loading::after {
+      content: '';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+      100% { content: ''; }
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 1rem;
+    }
+
+    .date {
+      color: #535353;
+      font-size: 0.75rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Daily Song</h1>
+    <p class="subtitle">From Spotify's Top 50 &mdash; Global</p>
+    <div id="content">
+      <p class="loading">Loading today's song</p>
+    </div>
+  </div>
+
+  <script>
+    const content = document.getElementById('content');
+
+    async function loadSong() {
+      try {
+        const res = await fetch('/api/song');
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to load song');
+        }
+        const song = await res.json();
+
+        content.innerHTML = `
+          <img class="album-art" src="${song.image}" alt="${song.album} cover" />
+          <div class="song-name">${song.name}</div>
+          <div class="artists">${song.artists}</div>
+          <a class="listen-btn" href="${song.url}" target="_blank" rel="noopener noreferrer">Listen on Spotify</a>
+          <div class="date">${song.date}</div>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="error">${err.message}</p>`;
+      }
+    }
+
+    loadSong();
+  </script>
+</body>
+</html>
