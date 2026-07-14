@@ -68,7 +68,7 @@ async function searchTracks(token) {
     q: query,
     type: 'track',
     market: 'US',
-    limit: '50',
+    limit: '20',
   });
 
   const res = await fetch(`https://api.spotify.com/v1/search?${params}`, {
