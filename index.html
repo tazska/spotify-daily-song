@@ -120,7 +120,7 @@
 
     async function loadSong() {
       try {
-        const res = await fetch('/api/song');
+        const res = await fetch('data/today.json');
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error || 'Failed to load song');
