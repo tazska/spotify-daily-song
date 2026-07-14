@@ -106,7 +106,7 @@ function pickSong(tracks, history) {
 }
 
 async function validateToken(token) {
-  const res = await fetch('https://api.spotify.com/v1/tracks/4cOdK2wGK1qH4Dsr63D5Yk', {
+  const res = await fetch('https://api.spotify.com/v1/tracks/7qiZfU4dY1lWllzX7mPBI3', {
     headers: { 'Authorization': `Bearer ${token}` },
   });
 
