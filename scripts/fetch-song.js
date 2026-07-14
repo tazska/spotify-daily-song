@@ -64,7 +64,7 @@ async function searchTracks(token) {
   const year = new Date().getFullYear();
   const query = SEARCH_QUERY.replace('2026', String(year));
 
-  const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&market=US&limit=20`;
+  const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&market=US`;
   console.log(`Search URL: ${url}`);
 
   const res = await fetch(url, {
