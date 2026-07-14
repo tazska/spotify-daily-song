@@ -64,19 +64,17 @@ async function searchTracks(token) {
   const year = new Date().getFullYear();
   const query = SEARCH_QUERY.replace('2026', String(year));
 
-  const params = new URLSearchParams({
-    q: query,
-    type: 'track',
-    market: 'US',
-    limit: '20',
-  });
+  const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&market=US&limit=20`;
+  console.log(`Search URL: ${url}`);
 
-  const res = await fetch(`https://api.spotify.com/v1/search?${params}`, {
+  const res = await fetch(url, {
     headers: { 'Authorization': `Bearer ${token}` },
   });
 
   if (!res.ok) {
     const body = await res.text();
+    console.error(`Response status: ${res.status}`);
+    console.error(`Response body: ${body}`);
     throw new Error(`Spotify search request failed (${res.status}): ${body}`);
   }
 
@@ -107,9 +105,27 @@ function pickSong(tracks, history) {
   return candidates[index];
 }
 
+async function validateToken(token) {
+  const res = await fetch('https://api.spotify.com/v1/tracks/4cOdK2wGK1qH4Dsr63D5Yk', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Token validation failed (${res.status}): ${body}`);
+  }
+
+  const data = await res.json();
+  console.log(`Token valid. Test track: "${data.name}" by ${data.artists.map(a => a.name).join(', ')}`);
+}
+
 async function main() {
   console.log('Fetching access token...');
   const token = await getAccessToken();
+  console.log(`Token received (length: ${token.length}).`);
+
+  console.log('Validating token...');
+  await validateToken(token);
 
   console.log('Searching for tracks...');
   const tracks = await searchTracks(token);
